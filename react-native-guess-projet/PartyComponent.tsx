@@ -11,7 +11,7 @@ const PartyComponent = ({navigation}) => {
       </View>
       <View style={styles.content}>
         {Array.from({ length: 4 }).map((_, index) => (
-          <View key={index}>
+          <TouchableOpacity key={index}>
             <View style={styles.row}>
               <View style={styles.icon} />
               <View>
@@ -20,7 +20,7 @@ const PartyComponent = ({navigation}) => {
               </View>
             </View>
             <View style={styles.divider} />
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
       <TouchableOpacity style={styles.footerButton} onPress={()=>{navigation.push('createparty')}}>
