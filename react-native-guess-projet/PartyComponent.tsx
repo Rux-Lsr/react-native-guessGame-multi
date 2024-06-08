@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 
 const {width, height} = Dimensions.get('window');
-const PartyComponent = () => {
+const PartyComponent = ({navigation}) => {
   return (
       <View>
         <Text style={styles.headerText}>Join a Party</Text><View style={styles.searchBar}>
@@ -23,7 +23,7 @@ const PartyComponent = () => {
           </View>
         ))}
       </View>
-      <TouchableOpacity style={styles.footerButton} >
+      <TouchableOpacity style={styles.footerButton} onPress={()=>{navigation.push('createparty')}}>
         <Text style={styles.innerCircle}>+</Text>
       </TouchableOpacity>
     </View>

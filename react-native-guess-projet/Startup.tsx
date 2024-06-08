@@ -1,84 +1,56 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 
-const Startup = () => {
+const { width, height } = Dimensions.get('window');
+export default function App({navigation}) {
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>GUESS THE NUMBER</Text>
-      <View style={styles.button}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </View>
-      <Text style={styles.footer}>
-        <Text style={styles.footerText}>Already have an account? </Text>
-        <Text style={styles.footerLink}>Login</Text>
-      </Text>
-    </View>
+    <LinearGradient
+    colors={['rgba(247.56, 158.44, 24.76, 0.97)', 'rgba(255, 7.44, 200.54, 0.71)']}
+    style={styles.container}
+  >
+    <TouchableOpacity style={[styles.button]} onPress={()=>{navigation.push('signup')}}>
+      <Text style={styles.buttonText}>Authenticate</Text>
+    </TouchableOpacity>
+    <Text style={[styles.title, { left: width * 0.19, top: height * 0.08, fontSize: width * 0.1 }]}>GUESS THE NUMBER</Text>
+  </LinearGradient>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    width: 360,
-    height: 640,
-    position: 'relative',
-    backgroundColor: 'transparent',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  title: {
-    left: 69,
-    top: 57,
-    position: 'absolute',
-    textAlign: 'center',
-    color: '#84067F',
-    fontSize: 36,
-    fontFamily: 'Inter',
-    fontWeight: '800',
-    textTransform: 'capitalize',
-    letterSpacing: 1.80,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
-    width: 252,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 18,
-    paddingBottom: 18,
-    left: 54,
-    top: 474,
     position: 'absolute',
     backgroundColor: 'white',
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
+    left: width * 0.15,
+    top: height * 0.7, 
+    width: width * 0.7, 
+    padding: height * 0.02
   },
   buttonText: {
     textAlign: 'center',
     color: '#D347B5',
-    fontSize: 16,
+    fontSize: width * 0.04,
     fontFamily: 'Inter',
     fontWeight: '700',
     textTransform: 'capitalize',
   },
-  footer: {
-    width: 257,
-    height: 27,
-    left: 49,
-    top: 551,
+  title: {
     position: 'absolute',
     textAlign: 'center',
-  },
-  footerText: {
-    color: '#18181A',
-    fontSize: 14,
+    color: '#84067F',
     fontFamily: 'Inter',
-    fontWeight: '500',
-  },
-  footerLink: {
-    color: '#FE724C',
-    fontSize: 14,
-    fontFamily: 'Inter',
-    fontWeight: '700',
+    fontWeight: '800',
+    textTransform: 'capitalize',
+    letterSpacing: 1.80,
   },
 });
-
-export default Startup;

@@ -1,108 +1,134 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity,TextInput } from 'react-native';
 
-// Obtenez les dimensions de l'écran
 const { width, height } = Dimensions.get('window');
 
-const SignUp = () => {
+export default function App({navigation}) {
+  const handleVerify = () => {
+    navigation.push('party')
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Sign Up</Text>
-      <Text style={styles.subHeader}>To continue</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Full name</Text>
-        <TextInput style={styles.input} placeholder="Arlene Mccoy" />
+      <View style={styles.circle1} />
+      <View style={styles.circle2} />
+      <Text style={styles.login}>Login</Text>
+      <View style={styles.emailContainer}>
+        <Text style={styles.emailLabel}>E-mail</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Your email or phone"
+          placeholderTextColor="#C4C4C4"
+        />
       </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>E-mail</Text>
-        <TextInput style={styles.input} placeholder="prelookstudio@gmail.com" />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput style={styles.input} placeholder="••••••••" secureTextEntry />
-      </View>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>sign Up</Text>
+      <TouchableOpacity 
+        style={styles.buttonContainer} 
+        onPress={handleVerify}>
+        <Text style={styles.buttonText}>Verify</Text>
       </TouchableOpacity>
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Have an account Already? </Text>
-        <Text style={styles.signInText}>Sign in</Text>
-      </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    width: width *1, // 90% de la largeur de l'écran
-    height: height * 1, // 90% de la hauteur de l'écran
-    backgroundColor: '#9F1B82',
-    overflow: 'hidden',
-    alignSelf: 'center',
-    justifyContent: 'center',
+    flex: 1,
+    backgroundColor: 'white',
+    borderRadius: 20,
   },
-  header: {
-    textAlign: 'center',
-    color: '#D08A24',
-    fontSize: width * 0.1, // 10% de la largeur de l'écran
-    fontWeight: 'bold',
-    letterSpacing: 1.8,
+  circle1: {
+    width: 26,
+    height: 25,
+    position: 'absolute',
+    left: 22,
+    top: 38,
+    backgroundColor: '#D347B5',
+    borderRadius: 9999,
   },
-  subHeader: {
+  circle2: {
+    width: 26,
+    height: 25,
+    position: 'absolute',
+    left: width - 22 - 26,
+    top: height - 38 - 25,
+    backgroundColor: '#D347B5',
+    borderRadius: 9999,
+  },
+  login: {
+    width: 236,
+    position: 'absolute',
+    left: 48,
+    top: height - 38 - 236,
     textAlign: 'center',
     color: 'white',
-    fontSize: width * 0.055, // 5.5% de la largeur de l'écran
+    fontSize: 36,
+    fontFamily: 'Inter',
+    fontWeight: '400',
+    textTransform: 'capitalize',
+  },
+  emailContainer: {
+    width: width - 50,
+    height: 93,
+    position: 'absolute',
+    left: 25,
+    top: 139,
+  },
+  emailLabel: {
+    width: 56,
+    position: 'absolute',
+    left: 2.01,
+    top: 0,
+    color: '#9796A1',
+    fontSize: 16,
+    fontFamily: 'Inter',
     fontWeight: '500',
-    letterSpacing: 6,
-    marginTop: height * 0.01, // 1% de la hauteur de l'écran
   },
   inputContainer: {
-    marginTop: height * 0.02, // 2% de la hauteur de l'écran
-  },
-  label: {
-    color: '#FFFCFC',
-    fontSize: width * 0.04, // 4% de la largeur de l'écran
-    fontWeight: '500',
-  },
-  input: {
-    backgroundColor: '#E79CD7',
+    width: width - 50,
+    height: 65,
+    position: 'absolute',
+    left: 0,
+    top: 28,
+    backgroundColor: 'white',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#760B5E',
-    padding: 10,
-    fontSize: width * 0.04, // 4% de la largeur de l'écran
-    marginTop: height * 0.005, // 0.5% de la hauteur de l'écran
+    borderColor: '#EEEEEE',
+    shadowColor: '#E8E8E8',
+    shadowOffset: { width: 15, height: 20 },
+    shadowOpacity: 0.25,
+    shadowRadius: 45,
   },
-  button: {
+  input: {
+    width: width - 50,
+    height: 65,
     backgroundColor: 'white',
-    borderRadius: 25,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+    shadowColor: '#E8E8E8',
+    shadowOffset: { width: 15, height: 20 },
+    shadowOpacity: 0.25,
+    shadowRadius: 45,
+    paddingLeft: 20,
+    fontSize: 17,
+    color: '#C4C4C4',
+  },
+  buttonContainer: {
+    width: 252,
     padding: 18,
+    position: 'absolute',
+    left: 52,
+    top: 266,
+    backgroundColor: '#D449AE',
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: height * 0.05, // 5% de la hauteur de l'écran
   },
   buttonText: {
-    color: '#D347B5',
-    fontSize: width * 0.04, // 4% de la largeur de l'écran
+    textAlign: 'center',
+    color: '#FFFCFC',
+    fontSize: 16,
+    fontFamily: 'Inter',
     fontWeight: '700',
     textTransform: 'capitalize',
   },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: height * 0.02, // 2% de la hauteur de l'écran
-  },
-  footerText: {
-    color: '#FFFCFC',
-    fontSize: width * 0.035, // 3.5% de la largeur de l'écran
-    fontWeight: '500',
-  },
-  signInText: {
-    color: 'rgba(247, 158, 24, 0.97)',
-    fontSize: width * 0.035, // 3.5% de la largeur de l'écran
-    fontWeight: '700',
-  },
 });
-
-export default SignUp;

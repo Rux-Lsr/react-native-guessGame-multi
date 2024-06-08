@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 
 // Récupère les dimensions de l'écran de l'appareil
 const { width, height } = Dimensions.get('window');
 
-const CreateParty = () => {
+const CreateParty = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Create a Party</Text>
@@ -21,7 +21,7 @@ const CreateParty = () => {
         <Text style={styles.label}>Temps max</Text>
         <TextInput style={styles.input} placeholder="number" keyboardType="numeric" />
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={()=>{navigation.push('playground')}}>
         <Text style={styles.buttonText}>Create</Text>
       </TouchableOpacity>
     </View>

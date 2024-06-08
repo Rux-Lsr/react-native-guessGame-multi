@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -6,6 +6,12 @@ import LinearGradient from 'react-native-linear-gradient';
 const { width, height } = Dimensions.get('window');
 
 const PlayGround = () => {
+  const [layout, setLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+
+  const onLayout = (event) => {
+    const {x, y, width, height} = event.nativeEvent.layout;
+    setLayout({ x, y, width, height });
+  }
   return (
     <View style={styles.container}>
         <LinearGradient
@@ -14,9 +20,7 @@ const PlayGround = () => {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >
-        <Image
-        source={{ uri: 'https://via.placeholder.com/123x107' }}
-        />
+        <Text style={{position:'absolute', left:50, top:25, fontSize:40, color:'white'}}>?</Text>
       </LinearGradient>
       
       <Text style={styles.title}>Guess My Number Game</Text>
@@ -33,7 +37,7 @@ const PlayGround = () => {
         <Text style={styles.buttonText}>Check now</Text>
       </LinearGradient>
       
-      <Text style={styles.score} >Player:{'\n'}
+      <Text style={styles.score} >Player:{layout.width}{'\n'}
       Score:{'\n'}
       Highest-Score: </Text>
     </View>
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
     height: 107,
     borderRadius: 25,
     position: 'absolute',
-    top: height * 0.2875, // Calculé par rapport à la hauteur de l'écran
+    top: height * 0.28, // Calculé par rapport à la hauteur de l'écran
     alignSelf: 'center',
   },
   title: {
