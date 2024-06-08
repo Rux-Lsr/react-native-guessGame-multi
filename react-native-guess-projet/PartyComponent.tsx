@@ -1,20 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 
+const {width, height} = Dimensions.get('window');
 const PartyComponent = () => {
   return (
-    <ImageBackground
-      source={{ uri: 'https://via.placeholder.com/360x640' }}
-      style={styles.container}
-    >
-      <Text style={styles.headerText}>Join a Party</Text>
-      <View style={styles.searchBar}>
+      <View>
+        <Text style={styles.headerText}>Join a Party</Text><View style={styles.searchBar}>
         <View style={styles.circle} />
         <Text style={styles.searchText}>Search party</Text>
       </View>
       <View style={styles.content}>
         {Array.from({ length: 4 }).map((_, index) => (
-          <React.Fragment key={index}>
+          <View key={index}>
             <View style={styles.row}>
               <View style={styles.icon} />
               <View>
@@ -23,13 +20,13 @@ const PartyComponent = () => {
               </View>
             </View>
             <View style={styles.divider} />
-          </React.Fragment>
+          </View>
         ))}
       </View>
-      <View style={styles.footerButton}>
-        <View style={styles.innerCircle} />
-      </View>
-    </ImageBackground>
+      <TouchableOpacity style={styles.footerButton} >
+        <Text style={styles.innerCircle}>+</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -90,7 +87,7 @@ const styles = StyleSheet.create({
   },
     footerButton: {
       position: 'absolute',
-      bottom: 44,
+      bottom: -height*0.75,
       right: 44,
       width: 32,
       height: 32,
@@ -100,10 +97,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     innerCircle: {
-      width: 20,
-      height: 20,
-      borderRadius: 10,
-      backgroundColor: 'white',
+      fontSize:20,
+      color: 'white',
     },
     subtitle: {
       color: 'rgba(93, 95.54, 102.06, 0.46)',
