@@ -15,8 +15,8 @@ const PartyComponent = ({navigation}) => {
             <View style={styles.row}>
               <View style={styles.icon} />
               <View>
-                <Text style={styles.title}>Password</Text>
-                <Text style={styles.subtitle}>Participants</Text>
+                <Text style={styles.title}>Party name</Text>
+                <Text style={styles.subtitle}>params</Text>
               </View>
             </View>
             <View style={styles.divider} />

@@ -6,12 +6,8 @@ import LinearGradient from 'react-native-linear-gradient';
 const { width, height } = Dimensions.get('window');
 
 const PlayGround = () => {
-  const [layout, setLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [guessTime, setGuesstime] = useState(true)
 
-  const onLayout = (event) => {
-    const {x, y, width, height} = event.nativeEvent.layout;
-    setLayout({ x, y, width, height });
-  }
   return (
     <View style={styles.container}>
         <LinearGradient
@@ -25,8 +21,13 @@ const PlayGround = () => {
       
       <Text style={styles.title}>Guess My Number Game</Text>
       <View style={styles.inputContainer}>
+        {
+        (guessTime) ?
+          <Text style={styles.label}>Guess a number</Text>
+        :
         <Text style={styles.label}>Enter your guess number</Text>
-        <TextInput style={styles.input} />
+        }
+        <TextInput style={styles.input} placeholder='type a number' keyboardType='numeric'/>
       </View>
       <LinearGradient
         colors={['#D449AE', '#D08A24']}
@@ -37,7 +38,7 @@ const PlayGround = () => {
         <Text style={styles.buttonText}>Check now</Text>
       </LinearGradient>
       
-      <Text style={styles.score} >Player:{layout.width}{'\n'}
+      <Text style={styles.score} >Player:{'\n'}
       Score:{'\n'}
       Highest-Score: </Text>
     </View>
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#EEEEEE',
-    backgroundColor: 'white',
+    backgroundColor: 'whitesmoke',
     marginTop: 28,
     padding: 15,
     fontSize: 16,

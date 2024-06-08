@@ -11,7 +11,7 @@ const CreateParty = ({navigation}) => {
       <View style={styles.divider} />
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Name</Text>
-        <TextInput style={styles.input} placeholder="Your Name" />
+        <TextInput style={styles.input} placeholder="Party Name" />
       </View>
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Number of participants</Text>
