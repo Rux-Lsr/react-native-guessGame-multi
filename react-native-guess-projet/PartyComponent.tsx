@@ -1,32 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'
+import { handleAuth } from './Startup';
 
 const {width, height} = Dimensions.get('window');
 const PartyComponent = ({navigation}) => {
+  //handleAuth(navigation);
+  const [parties, setParties] = useState([]);
+
+  useEffect(() => {
+    // Créez un écouteur en temps réel pour la collection "party"
+    const unsubscribe = firestore()
+      .collection('party')
+      .onSnapshot(querySnapshot => {
+        const partyData = [];
+        querySnapshot.forEach(doc => {
+          const { name, maxPlayer, players , state} = doc.data();
+          const currentPlayers = players ? players.length : 0; 
+          partyData.push({ id: doc.id, name, maxPlayer, currentPlayers, state });
+        });
+        setParties(partyData);
+      });
+
+    // Nettoyez l'écouteur lorsque le composant est démonté
+    return () => unsubscribe();
+  }, []);
+  
   return (
-      <View>
-        <Text style={styles.headerText}>Join a Party</Text><View style={styles.searchBar}>
-        <View style={styles.circle} />
-        <Text style={styles.searchText}>Search party</Text>
-      </View>
-      <View style={styles.content}>
-        {Array.from({ length: 4 }).map((_, index) => (
-          <TouchableOpacity key={index}>
-            <View style={styles.row}>
-              <View style={styles.icon} />
-              <View>
-                <Text style={styles.title}>Party name</Text>
-                <Text style={styles.subtitle}>params</Text>
-              </View>
+    <View>
+    <Text style={styles.headerText}>Join a Party</Text>
+    {/* Votre barre de recherche ici */}
+    <View style={styles.content}>
+      {parties.map(party => (
+        <TouchableOpacity key={party.id}>
+          <View style={styles.row}>
+            {/* Icône de la fête */}
+            <View>
+              <Text style={styles.title}>{party.name}</Text>
+              <Text style={styles.subtitle}>
+                {party.currentPlayers} / {party.maxPlayer} joueurs
+              </Text>
             </View>
-            <View style={styles.divider} />
-          </TouchableOpacity>
-        ))}
-      </View>
-      <TouchableOpacity style={styles.footerButton} onPress={()=>{navigation.push('createparty')}}>
-        <Text style={styles.innerCircle}>+</Text>
-      </TouchableOpacity>
+          </View>
+          <View style={styles.divider} />
+        </TouchableOpacity>
+      ))}
     </View>
+  </View>
   );
 };
 
@@ -115,3 +136,5 @@ const styles = StyleSheet.create({
   })
 
   export default PartyComponent;
+
+
