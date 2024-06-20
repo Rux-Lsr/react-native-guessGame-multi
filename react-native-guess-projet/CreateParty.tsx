@@ -1,27 +1,75 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { handleAuth } from './Startup';
+import firestore from '@react-native-firebase/firestore'
+import auth from '@react-native-firebase/auth';
 
 // Récupère les dimensions de l'écran de l'appareil
 const { width, height } = Dimensions.get('window');
 
 const CreateParty = ({navigation}) => {
+  const [name, setName] = useState('')
+  const [max, setMax] = useState(0)
+  //handleAuth(navigation);
+  
+
+  function saveToPartyCollection(name:string, number:number) {
+    
+    const user = auth().currentUser;
+      console.log(user)
+      if(user == null)
+        return;
+      const email = user.email;
+      firestore()
+      .collection('player')
+      .where('mail', '==', email)
+      .get()
+      .then(querySnapshot => {
+        const playerRef = querySnapshot.docs[0].ref; // Get the first document matching the email
+        firestore()
+          .collection('party')
+          .add({
+            host: playerRef,
+            name: name,
+            maxPlayer: number,
+            players: [playerRef],
+            state: 0 // status de la partie 0|1|-1
+          })
+          .then(() => {
+            console.log('Party saved!');
+            navigation.push('playground')
+          })
+          .catch(error => {
+            console.error('Error writing document: ', error);
+          });
+        })
+        .catch(error => {
+          console.error('Error finding player: ', error);
+        });
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Create a Party</Text>
       <View style={styles.divider} />
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Name</Text>
-        <TextInput style={styles.input} placeholder="Party Name" />
+        <TextInput style={styles.input} placeholder="Party Name" value={name} onChangeText={setName}/>
       </View>
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Number of participants</Text>
-        <TextInput style={styles.input} placeholder="number" keyboardType="numeric" />
+        <TextInput style={styles.input} placeholder="number" keyboardType="numeric" value={max} onChangeText={setMax}/>
       </View>
-      <View style={styles.inputGroup}>
+      {/* <View style={styles.inputGroup}>
         <Text style={styles.label}>Temps max</Text>
         <TextInput style={styles.input} placeholder="number" keyboardType="numeric" />
-      </View>
-      <TouchableOpacity style={styles.button} onPress={()=>{navigation.push('playground')}}>
+      </View> */}
+      <TouchableOpacity style={styles.button} onPress={()=>{
+          if(name=='' || max <= 0){
+              Alert.alert('veuillez remplir tous les champs')
+              return
+          }
+          saveToPartyCollection(name, max)
+        }}>
         <Text style={styles.buttonText}>Create</Text>
       </TouchableOpacity>
     </View>
