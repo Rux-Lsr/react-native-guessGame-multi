@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "822618260133",
-    "project_id": "guess-game-multi",
-    "storage_bucket": "guess-game-multi.appspot.com"
+    "project_number": "132666156424",
+    "project_id": "pure-night-423509-p7",
+    "storage_bucket": "pure-night-423509-p7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:822618260133:android:870612fd23460ac520c34c",
+        "mobilesdk_app_id": "1:132666156424:android:543df2e9f6297db4c3463d",
         "android_client_info": {
           "package_name": "com.awesomeproject"
         }
       },
       "oauth_client": [
         {
-          "client_id": "822618260133-6nsmedr6d0e8vtkh0hvqcmf77kiisqem.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.awesomeproject",
-            "certificate_hash": "dc71c48e00443e0a178d5b9c7c4348fbd41905fa"
-          }
-        },
-        {
-          "client_id": "822618260133-chbi6545d5ntqo78n7sitj8p1erd447m.apps.googleusercontent.com",
+          "client_id": "132666156424-c22lkk73j4rt43ts8hv5phuqfhe7ck4v.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCXenBxDiDPAHv6nG3zGSzMdKrdHnNu1_Y"
+          "current_key": "AIzaSyCvZxeROHwx2u6PX5PZiiBLG_P4owx9tn4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "822618260133-chbi6545d5ntqo78n7sitj8p1erd447m.apps.googleusercontent.com",
+              "client_id": "132666156424-c22lkk73j4rt43ts8hv5phuqfhe7ck4v.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
