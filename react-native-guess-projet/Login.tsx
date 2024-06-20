@@ -1,11 +1,34 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import auth from '@react-native-firebase/auth';
 
 // Obtenez les dimensions de l'écran
 const { width, height } = Dimensions.get('window');
+  
 
-const Login = () => {
+const Login = ({navigation}) => {
+  const [email ,setEmail]   = useState('')
+  const [password,setPassword] = useState('')
+  async function onEmailSignIn(email:string, password:string) {
+    try {
+      const authResult = await auth().signInWithEmailAndPassword(email, password);
+      Alert.alert('Connexion réussie avec l\'e-mail : ' + authResult.user.email);
+      navigation.push('party');
+    } catch (e) {
+      console.log(JSON.stringify(e));
+      Alert.alert('Connexion échouée: ' + e.message);
+    }
+  }
+  
+  const handleSignIn = (email:string, password:string) => {
+    if(email == '' || password == ''){
+      Alert.alert('fill All the inputs')
+      return
+    }
+    // Utilisez les mêmes états locaux email et password pour la connexion
+    onEmailSignIn(email, password);
+  }
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -15,10 +38,10 @@ const Login = () => {
       <Text style={styles.loginText}>Login</Text>
       <Text style={styles.continueText}>To continue</Text>
       <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Your email or phone" />
-          <TextInput style={styles.input} placeholder="Password" secureTextEntry />
+          <TextInput style={styles.input} placeholder="Your email" value={email} onChangeText={setEmail}/>
+          <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword}/>
       </View>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>{handleSignIn(email, password)}}>
         <LinearGradient
           colors={['#D449AE', '#D08A24']}
           style={styles.signInButton}
@@ -26,7 +49,13 @@ const Login = () => {
           <Text style={styles.signInButtonText}>Sign in</Text>
         </LinearGradient>
       </TouchableOpacity>
-      <Text style={styles.forgotPassword}>Forgot password?</Text>
+      <TouchableOpacity onPress={()=>{
+          navigation.goBack()
+          navigation.navigate('signup')
+        }
+      }>
+        <Text style={styles.forgotPassword}>do not have an account? Sign UP</Text>
+      </TouchableOpacity>
     </View>
   );
 };
