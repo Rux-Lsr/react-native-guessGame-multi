@@ -1,11 +1,39 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity,TextInput } from 'react-native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity,TextInput, Alert } from 'react-native';
+import { useRef, useState } from 'react';
+import firestore from '@react-native-firebase/firestore'
 
 const { width, height } = Dimensions.get('window');
 
+GoogleSignin.configure({
+  webClientId: '822618260133-chbi6545d5ntqo78n7sitj8p1erd447m.apps.googleusercontent.com',
+});
 export default function App({navigation}) {
-  const handleVerify = () => {
-    navigation.push('party')
+  
+  const [email, setEmail] = useState('')
+  const [mdp, setMdp] = useState('')
+  async function onEmailSignUp(email:string, password:string) {
+    try {
+      // Créer un utilisateur avec un e-mail et un mot de passe
+      const authResult = await auth().createUserWithEmailAndPassword(email, password);
+      // Vous pouvez maintenant obtenir les données de l'utilisateur avec authResult.user
+      Alert.alert('Inscription réussie avec l\'e-mail : ' + authResult.user.email);
+      // Naviguer vers 'party' après l'inscription
+      navigation.push('party');
+    } catch (e) {
+      console.log(JSON.stringify(e));
+      Alert.alert('Inscription échouée: ' + e);
+    }
+  }
+
+  
+  const handleVerify = (email:string, password:string) => {
+    if(email == '' || password == ''){
+      Alert.alert('fill All the inputs')
+      return
+    }
+    onEmailSignUp(email, password)
   }
   return (
     <View style={styles.container}>
@@ -16,14 +44,24 @@ export default function App({navigation}) {
         <Text style={styles.emailLabel}>E-mail</Text>
         <TextInput
           style={styles.input}
-          placeholder="Your email or phone"
+          placeholder="Your email "
           placeholderTextColor="#C4C4C4"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#C4C4C4"
+          secureTextEntry={true}
+          value={mdp}
+          onChangeText={setMdp}
         />
       </View>
       <TouchableOpacity 
         style={styles.buttonContainer} 
-        onPress={handleVerify}>
-        <Text style={styles.buttonText}>Verify</Text>
+        onPress={()=>{handleVerify(email, mdp)}}>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
     </View>
   );
@@ -82,21 +120,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontWeight: '500',
   },
-  inputContainer: {
-    width: width - 50,
-    height: 65,
-    position: 'absolute',
-    left: 0,
-    top: 28,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#EEEEEE',
-    shadowColor: '#E8E8E8',
-    shadowOffset: { width: 15, height: 20 },
-    shadowOpacity: 0.25,
-    shadowRadius: 45,
-  },
+
   input: {
     width: width - 50,
     height: 65,
@@ -111,6 +135,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontSize: 17,
     color: '#C4C4C4',
+    margin:5
   },
   buttonContainer: {
     width: 252,
@@ -122,6 +147,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop:40
   },
   buttonText: {
     textAlign: 'center',
@@ -132,3 +158,5 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
 });
+
+
