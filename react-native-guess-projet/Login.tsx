@@ -1,61 +1,68 @@
+
+import { firebase } from '@react-native-firebase/firestore';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import auth from '@react-native-firebase/auth';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert, Button } from 'react-native';
+import LoadingScreen from './LoadingComponent';
 
 // Obtenez les dimensions de l'écran
 const { width, height } = Dimensions.get('window');
   
 
 const Login = ({navigation}) => {
-  const [email ,setEmail]   = useState('')
-  const [password,setPassword] = useState('')
-  async function onEmailSignIn(email:string, password:string) {
-    try {
-      const authResult = await auth().signInWithEmailAndPassword(email, password);
-      Alert.alert('Connexion réussie avec l\'e-mail : ' + authResult.user.email);
-      navigation.push('party');
-    } catch (e) {
-      console.log(JSON.stringify(e));
-      Alert.alert('Connexion échouée: ' + e.message);
-    }
-  }
-  
-  const handleSignIn = (email:string, password:string) => {
-    if(email == '' || password == ''){
-      Alert.alert('fill All the inputs')
-      return
-    }
-    // Utilisez les mêmes états locaux email et password pour la connexion
-    onEmailSignIn(email, password);
-  }
+  const [pseudo, setPseudo] = useState('');
+  const [wait, setWait] = useState(false)
+
+  const handleSubmit = () => {
+    const playerRef = firebase.firestore().collection('player')
+    if(pseudo == '')
+      {
+        Alert.alert(
+          'Oups!!!',
+          'Veuillez remplir le choix'
+        )
+        return
+      }
+      setWait(true)
+    playerRef.where('nom', '==', pseudo)
+    .get().then((snapshot)=>{
+      if(!snapshot.empty){
+        navigation.push('join a party', {
+          pseudo:pseudo
+        })
+      }else{
+        playerRef.add({
+          nom:pseudo,
+          positionChosen:[],
+          positionPlayed:[]
+        })
+       
+        navigation.push('join a party', {
+          pseudo:pseudo
+        })
+      }
+      setWait(false)
+    })
+    
+  };
+
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={['rgba(211, 73, 177, 0.73)', 'rgba(208, 138, 36, 0.97)']}
-        style={styles.backgroundCircle}
-      />
-      <Text style={styles.loginText}>Login</Text>
-      <Text style={styles.continueText}>To continue</Text>
-      <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Your email" value={email} onChangeText={setEmail}/>
-          <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword}/>
-      </View>
-      <TouchableOpacity onPress={()=>{handleSignIn(email, password)}}>
-        <LinearGradient
-          colors={['#D449AE', '#D08A24']}
-          style={styles.signInButton}
-        >
-          <Text style={styles.signInButtonText}>Sign in</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={()=>{
-          navigation.goBack()
-          navigation.navigate('signup')
-        }
-      }>
-        <Text style={styles.forgotPassword}>do not have an account? Sign UP</Text>
-      </TouchableOpacity>
+    <View style={{ backgroundColor: 'white', padding: 20, alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      {
+        wait ? LoadingScreen():
+        <View>
+          <Text>Entrez votre pseudonyme :</Text>
+          <TextInput
+            placeholder="Pseudonyme"
+            onChangeText={setPseudo}
+            value={pseudo}
+          />
+          <Button
+            title="Soumettre"
+            onPress={handleSubmit}
+            color="#007AFF" // Couleur bleue assortie au blanc
+          />
+        </View>
+      }
     </View>
   );
 };
