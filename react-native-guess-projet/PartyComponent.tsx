@@ -71,7 +71,7 @@ const PartyComponent = ({route, navigation}) => {
             <View>
               <Text style={styles.title}>{party.host}</Text>
               <Text style={styles.subtitle}>
-                 {party.oponent==undefined?"En attente":"En cours"}
+                 {party.oponent==undefined?"En attente: 1/2":"En cours"}
               </Text>
             </View>
           </View>
