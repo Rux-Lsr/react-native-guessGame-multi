@@ -1,7 +1,7 @@
 
 import { firebase } from '@react-native-firebase/firestore';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert, Button } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Dimensions, Alert, Button } from 'react-native';
 import LoadingScreen from './LoadingComponent';
 
 // Obtenez les dimensions de l'écran

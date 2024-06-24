@@ -43,8 +43,9 @@ const PartyComponent = ({route, navigation}) => {
           openentSet:[],
           oponent:''
         }).then(()=>{
-          setWait(false);
           Alert.alert('Success', 'En attente de participant')
+          setWait(false);
+          navigation.push('playground')
         }).catch((e)=>{
             Alert.alert('Erreur', e)
             setWait(true)
@@ -66,7 +67,9 @@ const PartyComponent = ({route, navigation}) => {
         color="#007AFF" // Couleur bleue assortie au blanc
       />
       {parties.map((party:any) => (
-        <TouchableOpacity key={party.id}>
+        <TouchableOpacity key={party.id} onPress={()=>{
+          navigation.push('playground')
+        }}>
           <View style={styles.row}>
             <View>
               <Text style={styles.title}>{party.host}</Text>

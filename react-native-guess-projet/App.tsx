@@ -24,6 +24,7 @@ const App = () => {
         <Stack.Screen
           name="playground"
           component={PlayGround}
+          options={{ headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
