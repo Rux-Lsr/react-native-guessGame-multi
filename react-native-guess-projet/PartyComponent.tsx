@@ -16,9 +16,8 @@ const PartyComponent = ({route, navigation}) => {
       .onSnapshot(querySnapshot => {
         const partyData = Array()
         querySnapshot.forEach(doc => {
-          const { name, maxPlayer, players , state} = doc.data();
-          const currentPlayers = players ? players.length : 0; 
-          partyData.push({ id: doc.id, name, maxPlayer, currentPlayers, state });
+          const { host, maxPlayer} = doc.data();
+          partyData.push({ id: doc.id, host, maxPlayer });
         });
         setParties(partyData);
       });
