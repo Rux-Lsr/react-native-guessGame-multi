@@ -1,22 +1,20 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, BackHandler, ToastAndroid } from 'react-native';
 
 const {width, height} = Dimensions.get('window')
 const HomeScreen = ({navigation}) => {
+    
   return (
     <View style={styles.container}>
-      <Image
-        source={require('./assets/bt-nav.jpeg')}
-        style={styles.headerImage}
-      />
+      
       <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuItem} onPress={navigation.push('playground')}>
+        <TouchableOpacity style={styles.menuItem} onPress={()=>navigation.push('playground')}>
           <Text style={styles.menuText}>Jeux Solo</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={navigation.push('login')}>
+        <TouchableOpacity style={styles.menuItem} onPress={()=>navigation.push('login')}>
           <Text style={styles.menuText}>Jeux Multijoueur</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={navigation.goBack()}>
+        <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Quitter</Text>
         </TouchableOpacity>
       </View>
@@ -28,6 +26,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+    justifyContent:'flex-end'
+    
   },
   headerImage: {
     width: '100%',
