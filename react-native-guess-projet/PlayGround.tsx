@@ -27,8 +27,6 @@ interface PionPosition {
   y: number;
 }
 
-
-
 // Utiliser pour restreindre  la position d'un element 
 const restreindre = (pos: Float, maxPos: Float, minPos: Float) => {
   
@@ -67,8 +65,6 @@ function getPositionAleatoire(
 
 }
 
-
-
 function El(): React.JSX.Element {
 
   const [position, setPosition] = useState({x: 0,y: 0});
@@ -100,10 +96,7 @@ function El(): React.JSX.Element {
           { x: restreindre(locationX, desiredWidth, 0), y: restreindre(locationY, desiredHeight, 0) }]);
       }
       
-    }
-
-    
-    
+    } 
   }
   const handlePressPosCroix = (event: any) =>
   {
@@ -120,9 +113,6 @@ function El(): React.JSX.Element {
       setCroixPositions2 ([...croixPositions2, 
         { x: restreindre(locationX, desiredWidth, 0), y: restreindre(locationY, desiredHeight, 0) }]);
     }
-    
-    
-
   }
 
 
@@ -158,9 +148,7 @@ function El(): React.JSX.Element {
     else if(terrainDejeux === TERRAIN_DE_JEUX2)
     {
       setPionPositions2([])
-    }
-    
-    
+    }    
   }
   
   // Utiliser pour dire si 2 elements se touchent 
@@ -168,10 +156,8 @@ function El(): React.JSX.Element {
     pion1: PionPosition, 
     pion2: PionPosition, 
     rayon1: number, rayon2: number): boolean {
-      
       const distanceEntrePions = Math.sqrt((pion2.x - pion1.x) ** 2 + (pion2.y - pion1.y) ** 2);
       const sommeRayons = rayon1 + rayon2;
-      
       return distanceEntrePions <= sommeRayons;
     }
     
@@ -236,13 +222,9 @@ function El(): React.JSX.Element {
     hitPions()
   }
     , [croixPositions2])
-  
-    
   Dialog()
   
   return (
-    
-  
     <View style={styles.container}>
 
       {/* terrain de jeu1  */}
@@ -305,8 +287,6 @@ function El(): React.JSX.Element {
         color="#841584"
         accessibilityLabel="En savoir plus sur ce bouton violet"
       />
-
-        
       </View>
 
     </View>
@@ -335,12 +315,14 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: 'red',
     position: 'absolute',
+    display:'none'
   },
   element3: {
     width: 25,
     height: 25,
     backgroundColor: 'orange',
     position: 'absolute',
+
   },
 
 });
