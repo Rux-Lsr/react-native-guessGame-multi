@@ -16,16 +16,19 @@ enum GameStates{
   PLACE_PIONS,
   POSITIONNE_CROIX,
   ATTEND_JOUEUR_ADVERSE,
+  TOUR_JOUEUR2_TERMINE,
   ANIMATION,
   JEU_TERMINE,
   DEBUT_DU_JEU
 }
-let state = GameStates.DEBUT_DU_JEU
+let state = GameStates.PLACE_PIONS
 
 interface PionPosition {
   x: number;
   y: number;
 }
+
+
 
 // Utiliser pour restreindre  la position d'un element 
 const restreindre = (pos: Float, maxPos: Float, minPos: Float) => {
@@ -65,6 +68,8 @@ function getPositionAleatoire(
 
 }
 
+
+
 function El(): React.JSX.Element {
 
   const [position, setPosition] = useState({x: 0,y: 0});
@@ -84,26 +89,30 @@ function El(): React.JSX.Element {
     const { locationX, locationY } = event.nativeEvent;
     // Ajoutez la position du pion à l'état
 
-    if(state === GameStates.PLACE_PIONS)
+    if(currentGameState === GameStates.PLACE_PIONS)
     {
+      
       if(pionPositions.length == nombreMaxPion)
       {
-        state = GameStates.POSITIONNE_CROIX
+        return
       }
       else
       {
         setPionPositions([...pionPositions, 
-          { x: restreindre(locationX, desiredWidth, 0), y: restreindre(locationY, desiredHeight, 0) }]);
+          { x: restreindre(locationX, desiredWidth, 0), y: restreindre(locationY, desiredHeight, 0) }])
+          ;
       }
       
-    } 
+        
+    }
+    
   }
   const handlePressPosCroix = (event: any) =>
   {
     // recuperation des coodonnees ecrans
     const { locationX, locationY } = event.nativeEvent;
 
-    if(state == GameStates.POSITIONNE_CROIX)
+    if(currentGameState == GameStates.POSITIONNE_CROIX)
     {
       
       if( croixPositions2.length >= 1)
@@ -113,6 +122,9 @@ function El(): React.JSX.Element {
       setCroixPositions2 ([...croixPositions2, 
         { x: restreindre(locationX, desiredWidth, 0), y: restreindre(locationY, desiredHeight, 0) }]);
     }
+    
+    
+
   }
 
 
@@ -122,7 +134,7 @@ function El(): React.JSX.Element {
     setTerrainVisible(!terrainVisible)
   }
   
-  // Utiliser pour ajouter les pions de maniere aleatoire
+  // Utiliser pour ajouter les pions de maniere aleatoire sur le terrain 2
   const handlerAutoAjoutPion = () => {
     if (pionPositions2.length === nombreMaxPion) {
       return; // Si l'array est déjà plein, sortir de la fonction
@@ -139,7 +151,7 @@ function El(): React.JSX.Element {
   };
 
   // Utiliser pour effacer les pions sur un terrain
-  const resetTerrain = (terrainDejeux: number) => {
+  const handleresetTerrain = (terrainDejeux: number) => {
     
     if(terrainDejeux === TERRAIN_DE_JEUX1)
     {
@@ -148,7 +160,9 @@ function El(): React.JSX.Element {
     else if(terrainDejeux === TERRAIN_DE_JEUX2)
     {
       setPionPositions2([])
-    }    
+    }
+    
+    
   }
   
   // Utiliser pour dire si 2 elements se touchent 
@@ -156,8 +170,10 @@ function El(): React.JSX.Element {
     pion1: PionPosition, 
     pion2: PionPosition, 
     rayon1: number, rayon2: number): boolean {
+      
       const distanceEntrePions = Math.sqrt((pion2.x - pion1.x) ** 2 + (pion2.y - pion1.y) ** 2);
       const sommeRayons = rayon1 + rayon2;
+      
       return distanceEntrePions <= sommeRayons;
     }
     
@@ -191,103 +207,207 @@ function El(): React.JSX.Element {
       setCroixPositions1 ([...croixPositions1, 
         { x: restreindre(pos.x, desiredWidth, 0), y: restreindre(pos.y, desiredHeight, 0) }]);
   }
-  
 
-  function Dialog()
+  function actionsCpu()
   {
-    if(state == GameStates.DEBUT_DU_JEU)
+    // le CPU poositionne sa croix
+    cpuPlay()
+    
+  }
+
+  
+  // Utiliser pour l'ancer le jeu
+  const handleStartGame = () =>
+  {
+    if(pionPositions.length == nombreMaxPion)
     {
-      Alert.alert("DEBUT DU JEU", "Positionne tes pions sur le terrain")
-      state = GameStates.PLACE_PIONS
+      // Ajout des pions automatiquement sur le terrain2 par cpu
+      handlerAutoAjoutPion()
+      //state = GameStates.POSITIONNE_CROIX
+      setCurrentGameState(GameStates.POSITIONNE_CROIX)
+
+      // changement du terrain de jeu
+      handleChangeTerrain()
+
+      Alert.alert('Partie commencée', 'La partie a commencé, positionnez votre croix où vous pensez que les pions adverses peuvent se trouver.', [{ text: 'OK' }]);
+
+    }
+
+    
+    
+  }
+  const handleJouer = () =>
+  {
+    // Ajout des pions automatiquement sur le terrain2 par cpu
+    handlerAutoAjoutPion()
+    //state = GameStates.POSITIONNE_CROIX
+    setCurrentGameState(GameStates.POSITIONNE_CROIX)
+
+    // changement du terrain de jeu
+    handleChangeTerrain()
+  }
+
+  const handleCedeTour = () => {
+
+    if(croixPositions2.length > 0)
+    {
+      // On change le terrain et l'etat du jeu
+      setCurrentGameState (GameStates.ATTEND_JOUEUR_ADVERSE)
+      handleChangeTerrain()
+
+      // On planifie le temps que le CPU vas faire avant de jouer
+      setTimeout(() => {
+
+        actionsCpu()
+        ToastAndroid.show("apres 3 segonde", ToastAndroid.SHORT)
+        //
+        setTimeout(() => 
+        {
+          setCurrentGameState(GameStates.TOUR_JOUEUR2_TERMINE)
+        }, 500)
+
+      }, 3000)
+
+    }
+    else
+    {
+      ToastAndroid.show("Vous n'avez pas encore jouer!!!", ToastAndroid.SHORT)
     }
     
   }
-  function Dialog1()
-  {
-    if(state == GameStates.POSITIONNE_CROIX)
-    {
-      Alert.alert("DEBUT DU JEUssdd", "Positionne tes pions sur le terrain")
-      state = GameStates.DEBUT_DU_JEU
-    }
-    
-  }
+
+  
 
   function setState(etat:number)
   {
     state = etat
   }
 
+  const MenuStatePlacePions = () =>
+  { 
+    return (
+      <View style={styles.container2FootMenu}>
+        <TouchableOpacity style={styles.button} onPress={() => {handleresetTerrain(TERRAIN_DE_JEUX1)}}>
+          <Text style={styles.buttonText}>Reset pion</Text>
+        </TouchableOpacity>
+
+        <View style={{width: 100}} />
+
+        <TouchableOpacity style={styles.button} onPress={handleStartGame}>
+          <Text style={styles.buttonText}>Continuer</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+  
+  // Mes composants locaux
+  const MenuStatePositionneCroix = () =>
+  {
+    return (
+      <View style={styles.container2FootMenu}>
+        <TouchableOpacity style={styles.button} onPress={handleCedeTour}>
+          <Text style={styles.buttonText}>Céder le tour</Text>
+        </TouchableOpacity>
+      </View>
+    )
+    
+  }
+
+  const MenuStateAttenteCpu = () =>
+  {
+    return(
+      <View style={styles.container2FootMenu}>
+        <TouchableOpacity style={styles.button} onPress={handleJouer}>
+          <Text style={styles.buttonText}>Jouer</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+
+  
+  
+
   // Declaration des UseEffects
   useEffect( () => {
     hitPions()
   }
     , [croixPositions2])
-  Dialog()
+  
+  useEffect(() => {
+    
+    // Affiche la boîte de dialogue au démarrage du jeu quand le jeu est lance
+    Alert.alert("Bienvenue", "Prêt à jouer ? place tes pions sur le terrain");
+
+  }, []);
+
+
+
   
   return (
+    
+  
     <View style={styles.container}>
-
+      
       {/* terrain de jeu1  */}
-      {terrainVisible && <TouchableOpacity
+      {terrainVisible && <View>
+        <TouchableOpacity
         style={{backgroundColor: "#011111", height: desiredHeight, width: desiredWidth}}
         onPress={handlePress}>
-          
-        
+        </TouchableOpacity>
+
+        <View style={{height: desiredHeight, width: desiredWidth, position:"absolute"}}>
           {pionPositions.map((pion, index) => (
+
             <View
             key={index}
             style={[styles.element, { left: pion.x, top: pion.y }]}/>
+
           ))}
 
-        {croixPositions1.map((pion, index) => (    
-          <View
-          key={index}
-          style={[styles.element3, { left: pion.x, top: pion.y }]}/>
+          {croixPositions1.map((pion, index) => (    
+            <View
+            key={index}
+            style={[styles.element3, { left: pion.x, top: pion.y }]}/>
 
-        ))}
-      
-      </TouchableOpacity>}
+          ))}
+        </View>
+
+      </View>}
 
       {/* terrain de jeu 2 */}
-      {!terrainVisible && <TouchableOpacity
+      {!terrainVisible && <View>
+        <TouchableOpacity
         style={{backgroundColor: "#01110", height: desiredHeight, width: desiredWidth}}
         onPress={handlePressPosCroix}>
+        
 
-        {pionPositions2.map((pion, index) => (
+        </TouchableOpacity>
+        <View style={{height: desiredHeight, width: desiredWidth, position:"absolute"}}>
+          {pionPositions2.map((pion, index) => (
           
-          <View
-          key={index}
-          style={[styles.element2, { left: pion.x, top: pion.y }]}/>
+            <View
+            key={index}
+            style={[styles.element2, { left: pion.x, top: pion.y }]}/>
 
-        ))}
+          ))}
 
-        {croixPositions2.map((pion, index) => (
+          {croixPositions2.map((pion, index) => (
           
-          <View
-          key={index}
-          style={[styles.element3, { left: pion.x, top: pion.y }]}/>
+            <View
+            key={index}
+            style={[styles.element3, { left: pion.x, top: pion.y }]}/>
 
-        ))}
-        
-        
+          ))}
+        </View>
 
-      </TouchableOpacity>}
+      </View>}
 
-      <View style={{height: heightFootmenu, width: WidthFootmenu, backgroundColor: "white"}}>
-        
-      <Button
-        onPress={handleChangeTerrain}
-        title="changer de terrain"
-        color="#841584"
-        accessibilityLabel="En savoir plus sur ce bouton violet"
-      />
-      <Button
-        onPress={handlerAutoAjoutPion}
-        title="auto"
-        color="#841584"
-        accessibilityLabel="En savoir plus sur ce bouton violet"
-      />
-      </View>
+      <View style={{height: heightFootmenu, width: WidthFootmenu, backgroundColor: "white"}}> 
+        { currentGameState == GameStates.PLACE_PIONS && <MenuStatePlacePions/>}
+        { currentGameState == GameStates.POSITIONNE_CROIX && <MenuStatePositionneCroix/>}
+        { currentGameState == GameStates.TOUR_JOUEUR2_TERMINE && <MenuStateAttenteCpu/>}
+      </View>    
 
     </View>
 
@@ -315,14 +435,34 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: 'red',
     position: 'absolute',
-    display:'none'
   },
   element3: {
     width: 25,
     height: 25,
     backgroundColor: 'orange',
     position: 'absolute',
+  },
+  button: {
+    backgroundColor: "#007AFF",
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 8,
+    width: 130,
+    height: 50,
+    justifyContent:"center",
+    alignItems: "center",
 
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  container2FootMenu: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
 });
