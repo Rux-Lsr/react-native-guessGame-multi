@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from './Login';
-import PartyComponent from './PartyComponent';
-import PlayGround from './PlayGround';
-import HomeScreen from './Home';
+import Login from './src/screen/Login';
+import PartyComponent from './src/screen/PartyComponent';
+import HomeScreen from './src/screen/Home';
+import El from './src/screen/PlayGround';
 
 const Stack = createNativeStackNavigator(); 
 
@@ -29,9 +29,10 @@ const App = () => {
         />
         <Stack.Screen
           name="playground"
-          component={PlayGround}
+          component={El}
           options={{ headerShown: false}}
         />
+       
       </Stack.Navigator>
     </NavigationContainer>
   );
