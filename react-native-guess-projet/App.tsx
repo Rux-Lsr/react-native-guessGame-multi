@@ -5,6 +5,7 @@ import Login from './src/screen/Login';
 import PartyComponent from './src/screen/PartyComponent';
 import HomeScreen from './src/screen/Home';
 import El from './src/screen/PlayGround';
+import Multi from './src/screen/multiGround';
 
 const Stack = createNativeStackNavigator(); 
 
@@ -30,6 +31,11 @@ const App = () => {
         <Stack.Screen
           name="playground"
           component={El}
+          options={{ headerShown: false}}
+        />
+        <Stack.Screen
+          name="playgroundonline"
+          component={Multi}
           options={{ headerShown: false}}
         />
        

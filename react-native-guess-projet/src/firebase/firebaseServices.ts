@@ -1,80 +1,70 @@
 import { firebase } from "@react-native-firebase/firestore";
+import { useEffect } from "react";
 
 interface PionPosition {
     x: number;
     y: number;
   } 
-export const partyRef = firebase.firestore().collection('party');
-
-export const setPionPosition = (positions:PionPosition[], player:string, hostName:string) => {
-    if (player == hostName) {
-            partyRef.where('host','==', hostName)
-            .get()
-            .then((snapshoot)=>{
-                const parties = snapshoot.docs
-                let index;
-                for (index = 0; index < parties.length; index++) {
-                    if(parties[index].data().status == 1)
-                        break; 
-                }
-
-                parties[index].ref.update({
-                    pions_positions1: positions
-                })
-            })
-        }else{
-            partyRef.where('host','==', hostName)
-            .get()
-            .then((snapshoot)=>{
-                const parties = snapshoot.docs
-                let index;
-                for (index = 0; index < parties.length; index++) {
-                    if(parties[index].data().status == 1)
-                        break; 
-                }
-
-                parties[index].ref.update({
-                    pions_positions2: positions
-                })
-            })
-        }
-}
-
-export const setCroixPosition = (positions:PionPosition[], player: 0|1, hostName:string) => {
-    switch (player) {
-        case 0:
-            partyRef.where('host','==', hostName)
-            .get()
-            .then((snapshoot)=>{
-                const parties = snapshoot.docs
-                let index;
-                for (index = 0; index < parties.length; index++) {
-                    if(parties[index].data().status == 1)
-                        break; 
-                }
-
-                parties[index].ref.update({
-                    croixPosition1: positions
-                })
-            })
-            break;
-        case 1:
-            partyRef.where('host','==', hostName)
-            .get()
-            .then((snapshoot)=>{
-                const parties = snapshoot.docs
-                let index;
-                for (index = 0; index < parties.length; index++) {
-                    if(parties[index].data().status == 1)
-                        break; 
-                }
-
-                parties[index].ref.update({
-                    croixPosition2: positions
-                })
-            })
-        default:
-            break;
+  const firestore = firebase.firestore()
+  export const setPionPosition = async (positions:PionPosition[], pseudo:string, hostName:string) => {
+    try {
+      await firestore
+        .collection('games')
+        .doc(hostName)
+        .collection('players')
+        .doc(pseudo)
+        .set({ pionPositions: positions }, { merge: true });
+    } catch (error) {
+      console.error('Error setting pion positions: ', error);
     }
-
-}
+  };
+  
+  // Fonction pour définir les positions des croix
+  export const setCroixPosition = async (positions:PionPosition[], pseudo:string, hostName:string) => {
+    try {
+      await firestore
+        .collection('games')
+        .doc(hostName)
+        .collection('players')
+        .doc(pseudo)
+        .set({ croixPositions: positions }, { merge: true });
+    } catch (error) {
+      console.error('Error setting croix positions: ', error);
+    }
+  };
+  
+  // Fonction pour obtenir les positions des pions
+  export const getPionPositions = (hostName:string, callback) => {
+    return firestore
+      .collection('games')
+      .doc(hostName)
+      .collection('players')
+      .onSnapshot(snapshot => {
+        const positions: any[] = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.pionPositions) {
+            positions.push(...data.pionPositions);
+          }
+        });
+        callback(positions);
+      });
+  };
+  
+  // Fonction pour obtenir les positions des croix
+  export const getCroixPositions = (hostName:string, callback) => {
+    return firestore
+      .collection('games')
+      .doc(hostName)
+      .collection('players')
+      .onSnapshot(snapshot => {
+        const positions: any[] = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.croixPositions) {
+            positions.push(...data.croixPositions);
+          }
+        });
+        callback(positions);
+      });
+  };
