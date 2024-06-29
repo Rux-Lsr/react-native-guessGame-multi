@@ -4,8 +4,8 @@ import {Alert, Animated, Button, Dimensions, Image, PanResponder, StyleSheet, Te
 import { EventArgs } from 'react-native/Libraries/Performance/Systrace';
 import { Float, Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import { GameStates } from './GameStates';
-
+import { GoogleGenerativeAI } from '@google/generative-ai';
+ 
 const {width, height} = Dimensions.get("window")
 const desiredHeight: Float = height * 0.9;
 const desiredWidth: Float = width * 1;
@@ -15,8 +15,29 @@ const TERRAIN_DE_JEUX1 = 0
 const TERRAIN_DE_JEUX2 = 1
 const PLAYER1 = 0
 const PLAYER2 = 1
+const IMAGE_CROIX = require("../game_assets/croix.png")
+const IMAGE_CROIX_TOUCHE = require("../game_assets/croix_touche.png")
+const IMAGE_PION1 = require("../game_assets/pion1.png")
+const IMAGE_PION1_TOUCHER = require("../game_assets/pion1_toucher.png")
+const IMAGE_PION2 = require("../game_assets/pion2.png")
+const IMAGE_PION2_TOUCHER = require("../game_assets/pion2_toucher.png")
 
-let state = GameStates.PLACE_PIONS
+
+
+const API_KEY = 'AIzaSyA7FooSqjKxemabtIefdmV_BmVQz5rgInY';
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+enum GameStates{
+  PLACE_PIONS,
+  POSITIONNE_CROIX,
+  ATTEND_JOUEUR_ADVERSE,
+  TOUR_JOUEUR2_TERMINE,
+  TOUR_JOUEUR1_TERMINE,
+  ANIMATION,
+  JEU_TERMINE,
+  DEBUT_DU_JEU
+}
+//let state = GameStates.PLACE_PIONS
 
 interface PionPosition {
   x: number;
@@ -83,8 +104,9 @@ function El(): React.JSX.Element {
   const [pions2, setPions2] = useState<Pion[]>([]);
   const [croixPositions1, setCroixPositions1] = useState<Croix[]>([]);
   const [croixPositions2, setCroixPositions2] = useState<Croix[]>([]);
-  const [killPlayeur1, setKillPlayeur1] = useState(0);
-  const [killPlayeur2, setKillPlayeur2] = useState(0);
+  const [scorePlayeur1, setScorePlayeur1] = useState(0);
+  const [scorePlayeur2, setScorePlayeur2] = useState(0);
+  const [geminiDisplayArrow, setGeminiDisplayArrow] = useState<PionPosition[]>([])
   
   const [terrainVisible, setTerrainVisible] = useState<Boolean>(true)
   const [currentGameState, setCurrentGameState] = useState(GameStates.PLACE_PIONS) 
@@ -157,7 +179,6 @@ function El(): React.JSX.Element {
 
   }
 
-
   // Utiliser pour gerer l'affichage des terrains
   const handleChangeTerrain = () =>
   {
@@ -175,7 +196,6 @@ function El(): React.JSX.Element {
     for (let i = 0; i < nombreMaxPion; i++) {
       const pos = getPositionAleatoire(0, desiredWidth, 0, desiredHeight);
       newPion.push({
-
         position: { x: restreindre(pos.x, desiredWidth, 0), y: restreindre(pos.y, desiredHeight, 0) },
         estToucher: false,
 
@@ -225,22 +245,28 @@ function El(): React.JSX.Element {
     {
       for(let i = 0; i < pions2.length; i++)
       {
+        // On verifie si la croix cree touche le pion en utilisant la position et le rayon du pion et de la croix 
         let touche = pionsSeTouchent(croixPositions2[croixPositions2.length-1].position, pions2[i].position, 35, 35) 
         if(touche)
         {
           
-
           if(pions2[i].estToucher == false)
           {
             pions2[i].estToucher = true
 
-            ToastAndroid.show("J1 a Touche", ToastAndroid.SHORT);
+            //ToastAndroid.show("J1 a Touche", ToastAndroid.SHORT);
+            // Permet d'afficher le pion cacher quand il est touche
             const tab = pions2.slice()
             tab[i].estVisible = true
             setPions2(tab)
+
+            // On modifie la croix si elle touche un pion
+            const tabCroix = croixPositions2.slice()
+            tabCroix[croixPositions2.length -1].aToucher = true
+            setCroixPositions2(tabCroix)
           }
               
-          return
+          
         }
       }
     }
@@ -249,18 +275,28 @@ function El(): React.JSX.Element {
       
       for(let i = 0; i < pions.length; i++)
       {
-        let touche = pionsSeTouchent(croixPositions1[croixPositions1.length-1].position, pions[i].position, 35, 35) 
+        let touche = pionsSeTouchent(croixPositions1[croixPositions1.length - 1].position, pions[i].position, 35, 35) 
         if(touche)
         {
           
 
           if(pions[i].estToucher == false)
           {
-            pions[i].estToucher = true
-            ToastAndroid.show("J2 a Touche", ToastAndroid.SHORT);
+            // On notifie que le pion a ete toucher
+            const tabPion = pions.slice()
+            //pions[i].estToucher = true
+            tabPion[i].estToucher = true
+            setPions(tabPion)
+
+            // On modifie la croix si elle touche un pion
+            const tab = croixPositions1.slice()
+            tab[croixPositions1.length -1].aToucher = true
+            setCroixPositions1(tab)
+
+            //ToastAndroid.show("J2 a Touche", ToastAndroid.SHORT);
           } 
 
-          return
+          
         }
       }
     }
@@ -394,7 +430,7 @@ function El(): React.JSX.Element {
   }
 
   // Utiliser pour controler la fin du jeu
-  function contorleGameFinish()
+  function controleGameFinish()
   {
     let nbPionPlayer1Toucher = getNonbrePionToucher(PLAYER1)
     let nbPionPlayer2Toucher = getNonbrePionToucher(PLAYER2)
@@ -418,10 +454,86 @@ function El(): React.JSX.Element {
 
   }
 
-  function setState(etat:number)
+  function actualiserScore()
   {
-    state = etat
+    setScorePlayeur1(getNonbrePionToucher(PLAYER2))
+    setScorePlayeur2(getNonbrePionToucher(PLAYER1))
   }
+
+  function parseTextToObject(text: string): { x: number; y: number } | null {
+    // Supprimer les espaces et les parenthèses
+    const cleanedText = text.trim().replace('{', '').replace('}', '');
+  
+    // Vérifier si le texte est au bon format (séparé par une virgule)
+    if (cleanedText.includes(',')) {
+      const [xStr, yStr] = cleanedText.split(',');
+  
+      // Vérifier si x et y sont des nombres valides
+      const x = parseFloat(xStr);
+      const y = parseFloat(yStr);
+  
+      if (!isNaN(x) && !isNaN(y)) {
+        return { x, y };
+      }
+    }
+  
+    // Si le texte n'est pas au bon format, renvoyer null
+    return null;
+  }
+
+  const askgemini = async (position:PionPosition[]) => {
+    try {
+      let pos:string = 'position: '
+      console.log(position)
+      for (let index = 0; index < position.length; index++) {
+        pos+=(' {'+position[index].x+','+position[index].y)
+        pos+='}, '
+        console.log(pos)
+      }
+      
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const chat = model.startChat();
+      const msg = 'Taille ecran:  hauteur'+height+'et largeur:'+width+ '. positions deja jouer: '+(pos)+" chaque points a un rayon de touchage 35px . reponds moi uniquement avec une proposition d'une seule coordonnee que je peux jouer avec sous le format :{x,y} en tenant en compte de ne pas toucher la surface sur laquelle j'ai deja jouer"
+      console.log(msg)
+      const result = await chat.sendMessage(msg);
+      const text = await result.response.text();
+      const reponse:string = text;
+      
+      console.log(reponse);
+      Alert.alert('Gemini', reponse)
+
+      return parseTextToObject(text);
+      
+    } catch (err) {
+      console.error('Erreur: veuillez verifier votre connexion internet:'+err);
+    }
+};  
+
+
+  // Utiliser pour montrer la position
+  function displaySuggestion(position: PionPosition) {
+    if (currentGameState === GameStates.POSITIONNE_CROIX) {
+      let newFleche: PionPosition = position;
+      ToastAndroid.show("sdas", ToastAndroid.SHORT)
+      setGeminiDisplayArrow([newFleche]);
+    }
+  }
+
+  const geminiAction = () => {
+    let tabPos = [];
+    for (let i = 0; i < croixPositions2.length; i++) {
+      if (croixPositions2[i].aToucher == true) {
+        tabPos.push(croixPositions2[i].position);
+      }
+    }
+    
+    askgemini(tabPos).then((positions)=>{
+      if(positions !=null && positions != undefined)
+        displaySuggestion(positions)
+    }) // ICI TU DOIT METTRE LA POSITION QUE GMINI RETOURNE (askgemini(tabPos))
+  }
+   
+
 
   
   // Mes composants locaux
@@ -466,7 +578,7 @@ function El(): React.JSX.Element {
     )
   }
 
-  const UIKillPlayers = () => 
+  const UIScorePlayers = () => 
   {
     const stylesUIKillPlayers =  StyleSheet.create({
       container: {
@@ -491,8 +603,8 @@ function El(): React.JSX.Element {
     })
     return(
       <View style={stylesUIKillPlayers.container}>
-        <Text style={stylesUIKillPlayers.TextKill}>{killPlayeur1}</Text>
-        <Text style={stylesUIKillPlayers.TextKill}>{killPlayeur2}</Text>
+        <Text style={stylesUIKillPlayers.TextKill}>{scorePlayeur1}</Text>
+        <Text style={stylesUIKillPlayers.TextKill}>{scorePlayeur2}</Text>
       </View>
     )
   }
@@ -506,24 +618,22 @@ function El(): React.JSX.Element {
   useEffect( () => {
 
     hitPions()
-    contorleGameFinish()
+    controleGameFinish()
   }
     , [croixPositions2])
 
 
   useEffect( () => {
-    
-    
-    
-    contorleGameFinish()
+
+    controleGameFinish()
     //ToastAndroid.show(currentGameState+"rc", ToastAndroid.SHORT)
-    
   }
     , [croixPositions1])
 
   useEffect(() => {
 
     hitPions()
+    actualiserScore()
 
   }, [currentGameState])
   
@@ -550,23 +660,20 @@ function El(): React.JSX.Element {
         </TouchableOpacity>
 
         <View style={{height: desiredHeight, width: desiredWidth, position:"absolute", pointerEvents: "none"}}>
-          
           {pions.map((pion, index) => (
-
             <View
             key={index}
             style={[styles.element, { left: pion.position.x, top: pion.position.y }]}>
-
-              <View style={{position: "absolute", left: -35, top: -35, width: 70, height: 70, 
-              //backgroundColor:"blue",
-              flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Image source={require('../game_assets/pion1.png')} style={{ width:70, height:70,resizeMode:"contain"}}/>
+              <View style={{position: "absolute", left: -36, top: -36, width: 72, height: 72, 
+                //backgroundColor:"blue",
+                flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Image source={pion.estToucher?IMAGE_PION1_TOUCHER:IMAGE_PION1} style={{ width:72, height:72,resizeMode:"contain"}}/>
               </View>  
-
             </View>  
 
           ))}
 
+          {/* Utiliser pour positionner les croix sur le terrain1  */}
           {croixPositions1.map((croix, index) => (   
             <View
             key={index}
@@ -574,12 +681,12 @@ function El(): React.JSX.Element {
               <View style={{position: "absolute", left: -35, top: -35, width: 70, height: 70, 
               //backgroundColor:'orange', 
               flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Image source={require('../game_assets/croix.png')} style={{ width:70, height:70,resizeMode:"contain"}}/>
+                <Image source={croix.aToucher?IMAGE_CROIX_TOUCHE:IMAGE_CROIX} style={{ width:70, height:70,resizeMode:"contain"}}/>
               </View>  
             </View>
           ))}
 
-          <UIKillPlayers/>
+          <UIScorePlayers/>
               
         </View>
 
@@ -600,16 +707,17 @@ function El(): React.JSX.Element {
               key={index}
               style={[styles.element2, { left: pion.position.x, top: pion.position.y }]}>
 
-              {pion.estVisible && <View style={{position: "absolute", left: -35, top: -35, width: 70, height: 70, 
+              {pion.estVisible && <View style={{position: "absolute", left: -36, top: -36, width: 72, height: 72, 
               //backgroundColor:"red", 
               flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Image source={require('../game_assets/pion2.png')} style={{ width:70, height:70,resizeMode:"contain"}}/>
+                <Image source={IMAGE_PION2} style={{ width:72, height:72,resizeMode:"contain"}}/>
               </View>}
 
             </View>  
 
           ))}
 
+          {/* Utiliser pour positionner les croix sur le terrain2  */}
           {croixPositions2.map((croix, index) => (
           
             <View
@@ -618,27 +726,44 @@ function El(): React.JSX.Element {
               <View style={{position: "absolute", left: -35, top: -35, width: 70, height: 70, 
               //backgroundColor:'orange',
               flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Image source={require('../game_assets/croix.png')} style={{ width:70, height:70,resizeMode:"contain"}}/>
+                <Image source={croix.aToucher?IMAGE_CROIX_TOUCHE:IMAGE_CROIX} style={{ width:70, height:70,resizeMode:"contain"}}/>
               </View>        
             </View>
 
           ))}
-          <UIKillPlayers/>
+
+          {geminiDisplayArrow.map((pos, index) => (
+          <View
+          key={index}
+          style={[styles.flecheGeminiStyle, { left: pos.x, top: pos.y }]}>
+            <View style={{position: "absolute", left: -35, top: -35, width: 70, height: 70, 
+            backgroundColor:'orange',
+            flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              {/* <Image source={IMAGE_CROIX} style={{ width:70, height:70,resizeMode:"contain"}}/> */}
+            </View>        
+          </View>
+
+          ))}
+          
+          <UIScorePlayers/>
         </View>
         
       </View>}
 
       
-
+      {/* Utiliser pour l'affichage des difference menu de la footBar  */}
       <View style={{height: heightFootmenu, width: WidthFootmenu, backgroundColor: "white"}}> 
         { currentGameState == GameStates.PLACE_PIONS && <MenuStatePlacePions/>}
         { currentGameState == GameStates.TOUR_JOUEUR1_TERMINE && <MenuStateTourJoueur1termine/>}
         { currentGameState == GameStates.TOUR_JOUEUR2_TERMINE  && <MenuStateAttenteCpu/>}
+
+        { currentGameState == GameStates.POSITIONNE_CROIX && <View>
+          <Button title="gemi" onPress={geminiAction}/>
+          </View>}
       </View>    
 
     </View>
     
-
     
   );
 }
@@ -693,6 +818,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  flecheGeminiStyle: {
+    width: 70,
+    height: 70,
+    opacity: 1,
+    //backgroundColor: 'white',
+    position: 'absolute'
+  }
 
 });
 

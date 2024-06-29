@@ -1,17 +1,17 @@
 
 import { firebase } from '@react-native-firebase/firestore';
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Dimensions, Alert, Button } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Dimensions, Alert, Button, TouchableOpacity } from 'react-native';
 import LoadingScreen from './LoadingComponent';
 
 // Obtenez les dimensions de l'écran
 const { width, height } = Dimensions.get('window');
   
 
-const Login = ({navigation}) => {
+const Login = ({route, navigation}) => {
   const [pseudo, setPseudo] = useState('');
   const [wait, setWait] = useState(false)
-
+  const {isdarktheme} = route.params
   const handleSubmit = () => {
     const playerRef = firebase.firestore().collection('player')
     if(pseudo == '')
@@ -27,17 +27,17 @@ const Login = ({navigation}) => {
     .get().then((snapshot)=>{
       if(!snapshot.empty){
         navigation.push('join a party', {
-          pseudo:pseudo
+          pseudo:pseudo,
+          isdarktheme:isdarktheme
         })
       }else{
         playerRef.add({
           nom:pseudo,
-          positionChosen:[],
-          positionPlayed:[]
         })
        
         navigation.push('join a party', {
-          pseudo:pseudo
+          pseudo:pseudo,
+          isdarktheme:isdarktheme
         })
       }
       setWait(false)
@@ -46,21 +46,21 @@ const Login = ({navigation}) => {
   };
 
   return (
-    <View style={{ backgroundColor: 'white', padding: 20, alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+    <View style={{ backgroundColor: isdarktheme ? 'black' : 'white' , padding: 20, alignItems: 'center', justifyContent: 'center', flex: 1 }}>
       {
         wait ? LoadingScreen():
         <View>
-          <Text>Entrez votre pseudonyme :</Text>
+          <Text style={{color:isdarktheme?'white':'white'}}>Entrez votre pseudo:</Text>
           <TextInput
             placeholder="Pseudonyme"
             onChangeText={setPseudo}
             value={pseudo}
+            style={{borderColor:isdarktheme?'white':'black'}}
           />
-          <Button
-            title="Soumettre"
-            onPress={handleSubmit}
-            color="#007AFF" // Couleur bleue assortie au blanc
-          />
+          
+         <TouchableOpacity style={[styles.menuItem, { backgroundColor: isdarktheme ? 'green' : '#007AFF' }]} onPress={handleSubmit}>
+          <Text style={styles.menuText}>Connecter</Text>
+        </TouchableOpacity>
         </View>
       }
     </View>
@@ -71,6 +71,17 @@ const styles = StyleSheet.create({
   inputContainer :{
     marginTop:  height * 0.15,
   },
+  menuItem: {
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  menuText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   container: {
     width: width * 1,
     height: height * 1,
@@ -79,6 +90,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
   },
+
   backgroundCircle: {
     width: width * 0.95,
     height: height * 0.64,

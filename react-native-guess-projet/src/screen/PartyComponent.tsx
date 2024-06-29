@@ -2,18 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Button, Alert } from 'react-native';
 import firestore, { firebase } from '@react-native-firebase/firestore'
 import LoadingScreen from './LoadingComponent';
+import { GameStates } from './GameStates';
 
 const {width, height} = Dimensions.get('window');
 const PartyComponent = ({route, navigation}) => {
   //handleAuth(navigation);
   const [parties, setParties] = useState<[]>([]);
-  const { pseudo } = route.params
+  const { pseudo, isdarktheme } = route.params
   const [wait, setWait] = useState(false)
 
   useEffect(() => {
     // Créez un écouteur en temps réel pour la collection "party"
     const unsubscribe = firestore()
-      .collection('party').where('state','!=', 1)
+      .collection('party')
       .onSnapshot(querySnapshot => {
         const partyData = Array()
         querySnapshot.forEach(doc => {
@@ -37,19 +38,21 @@ const PartyComponent = ({route, navigation}) => {
         Alert.alert('Impossible', 'Vous avez deja un sallon ouvert')
         return
       }else{
-        partyRef.add({
+        const gameId = partyRef.add({
           host: pseudo,
-          pions_positions1:[],
-          pions_positions2:[],
-          croixPosition1:[],
-          croixPosition2:[],
-          oponent:'',
-          state:0
-        }).then(()=>{
+          pions_positions1: [],
+          pions_positions2: [],
+          croixPosition1: [],
+          croixPosition2: [],
+          opponent: '',
+          gameState: GameStates.PLACE_PIONS,
+          terrainVisible: true
+        }).then((val)=>{
           Alert.alert('Success', 'En attente de participant')
           setWait(false);
-          navigation.push('playground', {
-            pseudo: pseudo
+          navigation.push('playgroundonline', {
+            pseudo: pseudo,
+            gameId: val.id
           })
         }).catch((e)=>{
             Alert.alert('Erreur', e)
@@ -68,10 +71,13 @@ const PartyComponent = ({route, navigation}) => {
         console.log(snapshoot.docs.length)
         if(snapshoot.docs[0].data().host == pseudo && snapshoot.docs[0].data().status==0){
           setWait(false)
-          navigation.navigate('playground', {pseudo:pseudo})
+          navigation.navigate('playgroundonline', {pseudo:pseudo})
         }else{
           setWait(false)
         }
+      }else{
+        navigation.navigate('playgroundonline', {pseudo:pseudo})
+        setWait(false)
       }
     }) 
   }
@@ -81,7 +87,7 @@ const PartyComponent = ({route, navigation}) => {
          <Button
           title="Creer une partie"
           onPress={handleCreateAparty}
-          color="#007AFF" // Couleur bleue assortie au blanc
+          color= {isdarktheme ? "green":'#007AFF'} // Couleur bleue assortie au blanc
         />
       {parties.map((party:any) => (
         <TouchableOpacity key={party.id} onPress={()=>{handleSelectRoom(party.host)}}
@@ -89,8 +95,8 @@ const PartyComponent = ({route, navigation}) => {
         >
           <View style={styles.row}>
             <View>
-              <Text style={styles.title}>{party.host}</Text>
-              <Text style={styles.subtitle}>
+              <Text style={[styles.title, {color:isdarktheme?'white':'black'}]}>{party.host}</Text>
+              <Text style={[styles.subtitle, {color:isdarktheme?'whitesmoke':'black'}]}>
                   {party.oponent==undefined?"En attente: 1/2":"En cours"}
               </Text>
             </View>
@@ -100,10 +106,10 @@ const PartyComponent = ({route, navigation}) => {
       ))}
     </>
   }
-
+  console.log(isdarktheme)
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor:isdarktheme?'black':'white'}]}>
       <View style={styles.content}>
       {wait?LoadingScreen():
         gameListComponent()
@@ -116,7 +122,6 @@ const PartyComponent = ({route, navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white', 
     padding: 20, 
     alignItems: 'center', 
     justifyContent: 'center', 
