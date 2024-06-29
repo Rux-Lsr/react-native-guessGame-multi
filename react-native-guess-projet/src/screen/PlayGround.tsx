@@ -1,9 +1,7 @@
 /* eslint-disable prettier/prettier */
-import React, {EventHandler, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {Alert, Animated, Button, Dimensions, Image, PanResponder, StyleSheet, Text, ToastAndroid, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
-import { EventArgs } from 'react-native/Libraries/Performance/Systrace';
-import { Float, Int32 } from 'react-native/Libraries/Types/CodegenTypes';
-import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import React, {useEffect, useState} from 'react';
+import {Alert, Button, Dimensions, Image, StyleSheet, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { GoogleGenerativeAI } from '@google/generative-ai';
  
 const {width, height} = Dimensions.get("window")
@@ -737,9 +735,9 @@ function El(): React.JSX.Element {
           key={index}
           style={[styles.flecheGeminiStyle, { left: pos.x, top: pos.y }]}>
             <View style={{position: "absolute", left: -35, top: -35, width: 70, height: 70, 
-            backgroundColor:'orange',
+           // backgroundColor:'orange',
             flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              {/* <Image source={IMAGE_CROIX} style={{ width:70, height:70,resizeMode:"contain"}}/> */}
+              <Image source={require('../game_assets/IATarget.png')} style={{ width:70, height:70,resizeMode:"contain"}}/>
             </View>        
           </View>
 
