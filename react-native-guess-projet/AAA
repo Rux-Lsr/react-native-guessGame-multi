@@ -1,106 +1,14 @@
-Cahier des Charges : Gestion de chantier génie
-civil
-1. Objectif et portée du projet
-Développer un système de gestion de chantiers de génie civil qui
-permet à une entreprise de surveiller efficacement l'avancement
-de plusieurs projets, de gérer les stocks de matériaux et de
-communiquer de manière transparente et en temps réel avec chaque
-client. L'objectif est d'améliorer la productivité, la
-transparence et la satisfaction client tout en réduisant les
-risques et les retards.
-Buts spécifiques :
-• Développement de la Plateforme:
-Mise en place d'une plateforme numérique qui intègre des
-fonctionnalités de suivi en temps réel, de gestion de
-documents, de communication interne et externe, et de
-gestion des stocks.
-Création de profils utilisateurs distincts pour les clients
-et les membres du cabinet avec des niveaux d'accès
-appropriés.
-• Fonctionnalités de Suivi et de Reporting.
-Développement de fonctionnalités pour le téléchargement et
-la gestion en temps réel de photos et vidéos de
-l'avancement des chantiers.
-Intégration d'un système de journalisation pour enregistrer
-les mises à jour quotidiennes et les incidents.
-• Gestion des Matériaux
-Implémentation d'un système de gestion des inventaires pour
-suivre le stock de matériel sur chaque site de projet.
-Automatisation des processus de commande et de
-réapprovisionnement pour garantir la disponibilité des
-matériaux nécessaires.
-• Communications
-Mise en place de forums de discussion et de messagerie
-intégrée pour faciliter la communication entre toutes les
-parties prenantes.
-Fourniture d'outils pour la génération automatique de
-rapports d'avancement personnalisés pour les clients.
-Nom :
-3. Fonctionnalités de l'application
-- Tableaux de Bord et Suivi de Projet
-Vue d'ensemble des Projets : Tableaux de bord
-personnalisables affichant l'état d'avancement de chaque
-chantier, les délais, les budgets, et les alertes.
-Suivi Détaillé : Fonctionnalités pour suivre l'avancement
-quotidien des travaux, incluant l'enregistrement des
-accomplissements et des retards.
-- Gestion des Documents
-Stockage et Partage de Documents : Capacité de stocker, gérer
-et partager tous les documents de projet, tels que les plans,
-les contrats, et les rapports d'inspection.
-Contrôle de Version : Système pour gérer les versions des
-documents afin de s'assurer que tous les intervenants
-utilisent les informations les plus récentes.
-- Communication en Temps Réel
-Messagerie et Forums : Outils de communication intégrés pour
-permettre des discussions instantanées et des mises à jour
-entre les équipes sur le terrain et le bureau.
-Notifications et Alertes : Système pour envoyer des
-notifications automatisées concernant les mises à jour
-critiques ou les changements dans les projets.
-- Gestion des Ressources et du Matériel
-Suivi des Stocks de Matériel : Fonctionnalités pour
-surveiller les niveaux de stock de matériel sur chaque
-chantier, avec des notifications pour les
-réapprovisionnements nécessaires.
-Gestion des Fournisseurs : Outils pour gérer les relations
-avec les fournisseurs, y compris les commandes, les
-livraisons, et l'évaluation des performances.
-- Rapports d'Avancement et d'Activité
-Rapports Automatisés : Génération de rapports d'avancement
-personnalisables pour les clients, illustrant clairement
-l'état actuel des projets.
-Analyse de Données : Outils analytiques pour évaluer les
-données de projet et aider à la prise de décision.
-- Suivi Financier
-Budget et Contrôle des Coûts : Outils pour planifier les
-budgets, suivre les dépenses réelles et comparer avec les
-prévisions.
-Facturation et Gestion des Paiements : Système intégré pour
-gérer la facturation des clients et le suivi des paiements.
-- Sécurité et Conformité
-Gestion de la Sécurité : Protocoles pour assurer la
-sécurité des données du projet et la protection des
-informations sensibles.
-Conformité Réglementaire : Fonctionnalités pour
-s'assurer que les projets respectent les normes et
-réglementations locales et internationales.
-3. Exigences techniques
-Plateformes supportées: Android et iOS.
-Technologies suggérées: Frontend: Flutter, Backend: au
-choix.
-Sécurité: Authentification forte, chiffrement des données
-sensibles.
-4. Interface Utilisateur (UI) et Expérience Utilisateur
-(UX)
-Design: Interface élégante et professionnelle.
-Navigation: Navigation intuitive avec accès rapide aux
-fonctionnalités clés.
-Accessibilité: Conception accessible pour tous les
-utilisateurs.
-5. Planification et gestion de projet
-Échéancier: Développement avec des livraisons
-progressives.
-Méthodologie: Agile, avec des revues régulières.
-6. Support
-SuPport: Spécification technique.
+"@react-native-community/masked-view": "^0.1.11",
+    "@react-navigation/material-bottom-tabs": "^6.2.28",
+    "@react-navigation/native": "^5.3.2",
+    "@react-navigation/stack": "^5.3.6",
+    "react": "16.11.0",
+    "react-native": "0.62.2",
+    "react-native-animated-header": "^1.0.7",
+    "react-native-gesture-handler": "^2.17.1",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-paper": "^5.12.3",
+    "react-native-reanimated": "^3.12.1",
+    "react-native-safe-area-context": "^1.0.0",
+    "react-native-screens": "^3.32.0",
+    "react-native-vector-icons": "^10.1.0"
